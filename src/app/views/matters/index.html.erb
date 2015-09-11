@@ -17,13 +17,17 @@
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<% @matter_of_ak = Matter.where( "areaOfKnowledge_id = ? ", ak.id) %>
+					
+					<!--Matter.where( "areaOfKnowledge_id = ? ", ak.id)-->
+					<% @matter_of_ak = FACADE.Materia.where("areaOfKnowledge_id = " + ak.id.to_s) %>
 	  			  	<h4> <%= ak.name %> <span class="badge"> <%= @matter_of_ak.count %> </span> </h4>
 	  			</div>
 	  			<div class="panel-body">
 					<div class="container">
+						
+						<!--Course.where( "matter_id = ? ", materias.id)-->
 		        		<% @matter_of_ak.each_with_index do |materias, index| %>
-							<% courses_of_matter = Course.where( "matter_id = ? ", materias.id) %>
+							<% courses_of_matter = FACADE.Curso.where( "matter_id = " + materias.id.to_s ) %>
 		  			  		<%= link_to (materias.name) , materias %> <span class="badge"> <%= courses_of_matter.count %> </span> 
 		  			  		<% if @matter_of_ak.last %> <br> <% end %>
 		  			  	<% end %>
