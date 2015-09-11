@@ -1,8 +1,8 @@
 class PagesController < ApplicationController
   
   def index
-    @teachers = Teacher.all.limit(4)
-    @quantidade_of_teachers = Teacher.all.count
+    @teachers = FACADE.getAll('teacher').limit(4)
+    @quantidade_of_teachers = FACADE.count('teacher')
   end
   
   def show
