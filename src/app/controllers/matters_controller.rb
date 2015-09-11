@@ -4,9 +4,13 @@ class MattersController < ApplicationController
   # GET /matters
   # GET /matters.json
   def index
-    @area_of_knowledges = AreaOfKnowledge.all
-    @matters = Matter.all
-    @courses = Course.all
+    # @area_of_knowledges = AreaOfKnowledge.all
+    # @matters = Matter.all
+    # @courses = Course.all
+    
+    @area_of_knowledges = FACADE.getAll("area_of_knowledge")
+    @matters = FACADE.getAll("matter")
+    @courses = FACADE.getAll("course")
   end
 
   # GET /matters/1
