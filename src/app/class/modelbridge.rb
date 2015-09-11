@@ -13,6 +13,10 @@ class ModelBridgeTemplate
       @model.all 
     end
     
+    def self.where(conditions)
+        @model.where(conditions)
+    end
+    
     def self.allLimetedOf(quant)
       @model.all.limit(quant)
     end
