@@ -4,7 +4,8 @@ class AreaOfKnowledgesController < ApplicationController
   # GET /area_of_knowledges
   # GET /area_of_knowledges.json
   def index
-    @area_of_knowledges = AreaOfKnowledge.all
+    # @area_of_knowledges = AreaOfKnowledge.all
+    @area_of_knowledges =  FACADE.getAll("area_of_knowledge")
   end
 
   # GET /area_of_knowledges/1
@@ -14,7 +15,8 @@ class AreaOfKnowledgesController < ApplicationController
 
   # GET /area_of_knowledges/new
   def new
-    @area_of_knowledge = AreaOfKnowledge.new
+    # @area_of_knowledge = AreaOfKnowledge.new
+    @area_of_knowledge = FACADE.AreaConhecimento.new
   end
 
   # GET /area_of_knowledges/1/edit
@@ -24,8 +26,9 @@ class AreaOfKnowledgesController < ApplicationController
   # POST /area_of_knowledges
   # POST /area_of_knowledges.json
   def create
-    @area_of_knowledge = AreaOfKnowledge.new(area_of_knowledge_params)
-
+    # @area_of_knowledge = AreaOfKnowledge.new(area_of_knowledge_params)
+    @area_of_knowledge = FACADE.AreaConhecimento.new(area_of_knowledge_params)
+    
     respond_to do |format|
       if @area_of_knowledge.save
         format.html { redirect_to @area_of_knowledge, notice: 'Area of knowledge was successfully created.' }
@@ -64,7 +67,8 @@ class AreaOfKnowledgesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_area_of_knowledge
-      @area_of_knowledge = AreaOfKnowledge.find(params[:id])
+      # @area_of_knowledge = AreaOfKnowledge.find(params[:id])
+       @area_of_knowledge = FACADE.AreaConhecimento.get(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
