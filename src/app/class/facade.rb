@@ -47,7 +47,7 @@ class Facade
        @Recomendacao = BridgeRecommendation
     end
     
-    def Contato
+    def  Contato
        @Contato = BridgeContact
     end
     
@@ -98,12 +98,18 @@ class Facade
     
     # return the COUNT of records in a model
     def count(model)
-        result = case model
-           when "teacher" then Teacher.all.count
-           when "course" then Course.all.count
-           else "no found model"
+        case model
+            when "user" then BridgeUser.count()
+            when "student" then BridgeStudent.count()
+            when "teacher" then BridgeTeacher.count()
+            when "area_of_knowledge" then BridgeAreaOfKnowledge.count()
+            when "matter" then BridgeMatter.count()
+            when "course" then BridgeCourse.count()
+            when "enrollment" then BridgeEnrollment.count()
+            when "recommendation" then BridgeRecommendation.count()
+            when "contact" then BridgeContact.count()
+            else "Model #{model} not found!"
         end
-        return result
     end
 end
 
