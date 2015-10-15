@@ -41,12 +41,16 @@ class ModelBridgeTemplate
         @model.where(conditions).select(colums)
     end
     
-    def self.where(conditions)
-        @model.where(conditions)
-    end
+    # def self.where(conditions)
+    #     @model.where(conditions)
+    # end
     
-    def self.where_IN(conditions, terms)
-        @model.where(conditions, terms)
+    # def self.where_IN(conditions, terms)
+    #     @model.where(conditions, terms)
+    # end
+    
+    def self.where(*args)
+       @model.where(args)
     end
     
     def self.joins(conditions)
