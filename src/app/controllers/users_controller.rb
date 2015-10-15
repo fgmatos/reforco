@@ -6,7 +6,8 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    # @users = User.all
+    @users = FACADE.Usuario.all
   end
   
   def meuperfil
@@ -15,7 +16,9 @@ class UsersController < ApplicationController
     
     if is_student(current_user.id) 
       @student = getStudent(current_user.id)
-      @matriculas_student = Enrollment.where( "student_id = ? ", @student.id)
+      # @matriculas_student = Enrollment.where( "student_id = ? ", @student.id)
+      @matriculas_student = FACADE.Matricula.where( "student_id = ? ", @student.id)
+      
       @matriculas_student.each do |aula_student|
         @aulas_student = aula_student.course.name 
       end
@@ -23,18 +26,25 @@ class UsersController < ApplicationController
     
     if is_teacher(current_user.id) 
       @teacher = getTeacher(current_user.id)
-      @aulas = Course.where( "teacher_id = ? ", @teacher.id)
-      @ultimas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
-      @aulas_realizadas = Enrollment.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
-      @minhas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) )
+      # @aulas = Course.where( "teacher_id = ? ", @teacher.id)
+      # @ultimas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
+      # @aulas_realizadas = Enrollment.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
+      # @minhas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) )
+      @aulas = FACADE.Curso.where( "teacher_id = ? ", @teacher.id)
+      @ultimas_aulas = FACADE.Matricula.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
+      @aulas_realizadas = FACADE.Matricula.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
+      @minhas_aulas = FACADE.Matricula.where("course_id in ( ? )", @aulas.select(:id) )
      
       @horas_aulas = 0
       @minhas_aulas.each do |aula|
         @horas_aulas = @horas_aulas + aula.hours 
       end
-      @cursos ||= Course.all
-      @matriculas ||= Enrollment.all
-      @recomendacoes ||= Recommendation.all
+      # @cursos ||= Course.all
+      # @matriculas ||= Enrollment.all
+      # @recomendacoes ||= Recommendation.all
+      @cursos ||= FACADE.Curso.all
+      @matriculas ||= FACADE.Matricula.all
+      @recomendacoes ||= FACADE.Recomendacao.all
   		
   		@positivas = @recomendacoes.where("rating = 1 AND enrollment_id IN (?) ",
                                               @matriculas.where("course_id IN (?)",
@@ -65,7 +75,8 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    @user = User.new
+    # @user = User.new
+    @user = FACADE.Usuario.new
   end
 
   # GET /users/1/edit
@@ -75,7 +86,8 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(user_params)
+    # @user = User.new(user_params)
+    @user = FACADE.Usuario.new(user_params)
 
     respond_to do |format|
       if @user.save
@@ -122,7 +134,8 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = User.find(params[:id])
+      # @user = User.find(params[:id])
+      @user = FACADE.Usuario.get(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
