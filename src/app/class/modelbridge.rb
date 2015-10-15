@@ -24,6 +24,10 @@ class ModelBridgeTemplate
             @model.update(args)
         end
     end
+    
+    def self.destroy
+        @model.destroy 
+    end
 
     def self.get(id)
         @model.find(id) 
@@ -33,8 +37,8 @@ class ModelBridgeTemplate
         @model.all 
     end
     
-    def self.destroy
-        @model.destroy 
+    def self.order(*args)
+        @model.order(args)
     end
     
     def self.select_and_where(colums, conditions)
