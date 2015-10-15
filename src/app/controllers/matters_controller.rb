@@ -8,9 +8,14 @@ class MattersController < ApplicationController
     # @matters = Matter.all
     # @courses = Course.all
     
-    @area_of_knowledges = FACADE.getAll("area_of_knowledge")
-    @matters = FACADE.getAll("matter")
-    @courses = FACADE.getAll("course")
+    # @area_of_knowledges = FACADE.getAll("area_of_knowledge")
+    # @matters = FACADE.getAll("matter")
+    # @courses = FACADE.getAll("course")
+    
+    @area_of_knowledges = FACADE.AreaConhecimento.all
+    @matters = FACADE.Materia.all
+    @courses = FACADE.Curso.all
+    
   end
 
   # GET /matters/1
@@ -19,8 +24,8 @@ class MattersController < ApplicationController
     # @courses  = Course.where("matter_id = ? ", @matter.id)
     # @teachers = Course.where("matter_id = ? ", @matter.id).select(:teacher_id).distinct
     
-    @courses  = FACADE.Curso.where("matter_id = " + @matter.id.to_s)
-    @teachers = FACADE.Curso.where("matter_id = " + @matter.id.to_s).select(:teacher_id).distinct
+    @courses  = FACADE.Curso.where("matter_id = ? ", @matter.id)
+    @teachers = FACADE.Curso.where("matter_id = ? ", @matter.id).select(:teacher_id).distinct
   
   end
 
