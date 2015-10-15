@@ -6,21 +6,25 @@ class ApplicationController < ActionController::Base
   
   
   def is_student(id)
-    Student.where("user_id = ? ", id).select(:id).count == 1
+    # Student.where("user_id = ? ", id).select(:id).count == 1
+    FACADE.Aluno.where("user_id = ? ", id).select(:id).count == 1
   end
   
   def getStudent(id)
     # Student.where("user_id = ? ", id).first
-    return Student.find_by(user_id: id)
+    # return Student.find_by(user_id: id)
+    return FACADE.Aluno.find_by(user_id: id)
   end
   
   def is_teacher(id)
-    Teacher.where("user_id = ? ", id).select(:id).count == 1
+    # Teacher.where("user_id = ? ", id).select(:id).count == 1
+    FACADE.Professor.where("user_id = ? ", id).select(:id).count == 1
   end
   
   def getTeacher(id)
     # Teacher.where("user_id = ? ", id).first
-    return Teacher.find_by(user_id: id)
+    # return Teacher.find_by(user_id: id)
+    return FACADE.Professor.find_by(user_id: id)
   end
   
   def agendamentos_path
