@@ -9,11 +9,14 @@ class Facade
     
     
     # singleton design pattern implementation
-    def self.instance
-       @instance ||= new
+    
+    @@instance = Facade.new
+    
+    def self.getInstance
+       @@instance ||= Facade.new
     end
     
-    # mapping Model's Class to local vars
+    # mapping bridge Model's Class to local vars (alias) for FACADE fast access
     
     def Usuario
        @Usuario = BridgeUser 
@@ -111,6 +114,11 @@ class Facade
             else "Model #{model} not found!"
         end
     end
+    
+    # private :new
+    private_class_method :new
+    
+    
 end
 
-FACADE = Facade.instance
+FACADE = Facade.getInstance
