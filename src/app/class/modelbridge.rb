@@ -37,8 +37,24 @@ class ModelBridgeTemplate
         @model.destroy 
     end
     
+    def self.select_and_where(colums, conditions)
+        @model.where(conditions).select(colums)
+    end
+    
     def self.where(conditions)
         @model.where(conditions)
+    end
+    
+    def self.where_IN(conditions, terms)
+        @model.where(conditions, terms)
+    end
+    
+    def self.joins(conditions)
+        @model.joins(conditions)
+    end
+    
+    def self.joins_and_where_in(join_conditions, where_conditions, terms)
+        @model.joins(join_conditions).where(where_conditions, terms)
     end
     
     def self.allLimetedOf(quant)
@@ -47,6 +63,10 @@ class ModelBridgeTemplate
     
     def self.count
         @model.all.count
+    end
+    
+    def self.errors
+        @model.errors
     end
 
 end
