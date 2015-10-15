@@ -4,7 +4,8 @@ class EnrollmentsController < ApplicationController
   # GET /enrollments
   # GET /enrollments.json
   def index
-    @enrollments = Enrollment.all
+    # @enrollments = Enrollment.all
+    @enrollments = FACADE.Matricula.all
   end
 
   # GET /enrollments/1
@@ -14,7 +15,8 @@ class EnrollmentsController < ApplicationController
 
   # GET /enrollments/new
   def new
-    @enrollment = Enrollment.new
+    # @enrollment = Enrollment.new
+    @enrollment = FACADE.Matricula.new
   end
 
   # GET /enrollments/1/edit
@@ -24,7 +26,8 @@ class EnrollmentsController < ApplicationController
   # POST /enrollments
   # POST /enrollments.json
   def create
-    @enrollment = Enrollment.new(enrollment_params)
+    # @enrollment = Enrollment.new(enrollment_params)
+    @enrollment = FACADE.Matricula.new(enrollment_params)
 
     respond_to do |format|
       if @enrollment.save
@@ -64,7 +67,8 @@ class EnrollmentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_enrollment
-      @enrollment = Enrollment.find(params[:id])
+      # @enrollment = Enrollment.find(params[:id])
+      @enrollment = FACADE.Matricula.find(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
