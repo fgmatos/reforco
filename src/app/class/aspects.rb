@@ -7,9 +7,9 @@ module ASPECTS
     #----------------------------------------------------------------------------- #
     
     # Aspect :around, :class => TeacherController, :method => :new 
-    def validate_teacher
+    def user_can_be_teacher
         begin
-            @teacher = Teacher.all
+            @teacher = FACADE.Professor.all
             if ( @teacher.find_by( user_id: current_user.id ) )
                 flash[:notice] = "Olá #{current_user.name}, Você já é um professor!"
                 redirect_to teacher_path(@teacher.find_by(user_id: current_user.id))
