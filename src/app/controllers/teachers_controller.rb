@@ -8,12 +8,12 @@ class TeachersController < ApplicationController
   
   #----------------------------------------------------------------------------- #
   # sintaxe equivalente do framawork ruby on rails ao pointcut de AOP.           #
-  # o método validate_teacher será executado apenas quando o método new          #
+  # o método user_can_be_teacher será executado apenas quando o método new          #
   # for disparado;                                                               #
   #----------------------------------------------------------------------------- #
   
   # JoinPoint :class => TeacherController, :method => new
-  around_action :validate_teacher, only: :new
+  around_action :user_can_be_teacher, only: :new
   
   def index
     
@@ -116,7 +116,7 @@ class TeachersController < ApplicationController
     #-------------------------------------------------------------------------------------- #
     # esse método cria um novo professor, mais é necessário um teste para verificar se      #
     # o usuário atual do sistema (current_user) já não tem um perfil de professor.          #
-    # para isso foi criada um medodo validate_teacher e utilizado os requisos do framework  #
+    # para isso foi criada um medodo user_can_be_teacher e utilizado os requisos do framework  #
     # equivalentes a AOP, para realizar o teste e substituir a chamada ao metodo new        #
     # aqui declarado.                                                                       #
     #-------------------------------------------------------------------------------------- #
