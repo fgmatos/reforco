@@ -28,3 +28,6 @@ gem 'rails-i18n'
 
 #fgm - gem to image slide
 gem 'owlcarousel-rails'
+
+#@fgm2 - gem to AOP
+gem 'aquarium'
