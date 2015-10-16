@@ -1,15 +1,24 @@
+
+# Inclui o módulo com as definições de aspectos.
+include ASPECTS
+
 class TeachersController < ApplicationController
   before_action :set_teacher, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!, except: [:index, :show]
-  #before_action :find_teacher, only: [:show, :edit, :update, :destroy]
-
- 
+  
+  #----------------------------------------------------------------------------- #
+  # sintaxe equivalente do framawork ruby on rails ao pointcut de AOP.           #
+  # o método validate_teacher será executado apenas quando o método new          #
+  # for disparado;                                                               #
+  #----------------------------------------------------------------------------- #
+  
+  # JoinPoint :class => TeacherController, :method => new
+  around_action :validate_teacher, only: :new
+  
   def index
     
-   
     if ( (params[:area]) and (!params[:area][:id].eql? "") )
       area_id = params[:area][:id] 
-        # @areas = AreaOfKnowledge.joins(' JOIN matters ON area_of_knowledges.id = matters.areaOfKnowledge_id').distinct
         @materias = Matter.where("matters.areaOfKnowledge_id = ? ", area_id )
         @teachers  = Teacher.joins('LEFT OUTER JOIN courses ON teachers.id = courses.teacher_id').
               where("courses.id IN (?)", 
@@ -77,17 +86,18 @@ class TeachersController < ApplicationController
 
  
   def new
-    @teacher = Teacher.all
-    if ( @teacher.find_by( user_id: current_user.id ) )
-       flash[:notice] = "Olá #{current_user.name}, Você já é um professor!"
-       redirect_to teacher_path(@teacher.find_by(user_id: current_user.id))
-    else
-      @teacher = Teacher.new
-      @teacher.user = User.find(current_user.id)
-    end  
+    #-------------------------------------------------------------------------------------- #
+    # esse método cria um novo professor, mais é necessário um teste para verificar se      #
+    # o usuário atual do sistema (current_user) já não tem um perfil de professor.          #
+    # para isso foi criada um medodo validate_teacher e utilizado os requisos do framework  #
+    # equivalentes a AOP, para realizar o teste e substituir a chamada ao metodo new        #
+    # aqui declarado.                                                                       #
+    #-------------------------------------------------------------------------------------- #
+    
+    @teacher = Teacher.new
+    @teacher.user = User.find(current_user.id) 
   end
-
- 
+  
   def edit
   end
 
@@ -123,7 +133,6 @@ class TeachersController < ApplicationController
     end
   end
 
-  
   def update
 
     goback = params[:teacher][:redirect]
@@ -161,12 +170,5 @@ class TeachersController < ApplicationController
     def teacher_params
       params.require(:teacher).permit(:formation, :university, :description,  courses_attributes: [:id, :name, :_destroy], users_attributes: [:name, :cpf, :scholarity, :fone, :whatsapp, :skype, :addrress, :state, :country, :date_of_birth])
     end
-    ## para tomar um action em caso de duplicidades
-    #def find_teacher
-      #@teacher.user_id = current_user.id
-      #if @teacher.user_id != params[:id]
-       # redirect_to teachers_path(params[:id]), notice: 'Some message about not having access to perform that action'
-      #end
-    #end
-    
+
 end
