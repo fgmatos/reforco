@@ -7,7 +7,8 @@ class StudentsController < ApplicationController
   # GET /students
   # GET /students.json
   def index
-    @students = Student.all
+    # @students = Student.all
+    @students = FACADE.Aluno.all
   end
 
   # GET /students/1
@@ -17,7 +18,9 @@ class StudentsController < ApplicationController
 
   # GET /students/new
   def new
-    @student = Student.new
+    # @student = Student.new
+    @student = FACADE.Aluno.new
+    
     # @student = current_user.students.build
     # @student.user_id = current_user.id
   end
@@ -29,7 +32,8 @@ class StudentsController < ApplicationController
   # POST /students
   # POST /students.json
   def create
-    @student = Student.new(student_params)
+    # @student = Student.new(student_params)
+    @student = FACADE.Aluno.new(student_params)
     # @student =current_user.students.build(student_params)
 
     respond_to do |format|
@@ -77,7 +81,8 @@ class StudentsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_student
-      @student = Student.find(params[:id])
+      # @student = Student.find(params[:id])
+      @student = FACADE.Aluno.get(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

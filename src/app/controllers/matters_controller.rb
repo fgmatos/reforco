@@ -4,22 +4,35 @@ class MattersController < ApplicationController
   # GET /matters
   # GET /matters.json
   def index
-    @area_of_knowledges = AreaOfKnowledge.all
-    @matters = Matter.all
-    @courses = Course.all
+    # @area_of_knowledges = AreaOfKnowledge.all
+    # @matters = Matter.all
+    # @courses = Course.all
+    
+    # @area_of_knowledges = FACADE.getAll("area_of_knowledge")
+    # @matters = FACADE.getAll("matter")
+    # @courses = FACADE.getAll("course")
+    
+    @area_of_knowledges = FACADE.AreaConhecimento.all
+    @matters = FACADE.Materia.all
+    @courses = FACADE.Curso.all
+    
   end
 
   # GET /matters/1
   # GET /matters/1.json
   def show
-    @courses  = Course.where("matter_id = ? ", @matter.id)
-    @teachers = Course.where("matter_id = ? ", @matter.id).select(:teacher_id).distinct
+    # @courses  = Course.where("matter_id = ? ", @matter.id)
+    # @teachers = Course.where("matter_id = ? ", @matter.id).select(:teacher_id).distinct
+    
+    @courses  = FACADE.Curso.where("matter_id = ? ", @matter.id)
+    @teachers = FACADE.Curso.where("matter_id = ? ", @matter.id).select(:teacher_id).distinct
   
   end
 
   # GET /matters/new
   def new
-    @matter = Matter.new
+    # @matter = Matter.new
+    @matter = FACADE.Materia.new
   end
 
   # GET /matters/1/edit
@@ -29,8 +42,9 @@ class MattersController < ApplicationController
   # POST /matters
   # POST /matters.json
   def create
-    @matter = Matter.new(matter_params)
-
+    # @matter = Matter.new(matter_params)
+    @matter = FACADE.Materia.new(matter_params)
+    
     respond_to do |format|
       if @matter.save
         format.html { redirect_to @matter, notice: 'Matter was successfully created.' }
@@ -69,7 +83,8 @@ class MattersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_matter
-      @matter = Matter.find(params[:id])
+      # @matter = Matter.find(params[:id])
+      @matter = FACADE.Materia.get(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

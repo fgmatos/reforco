@@ -5,20 +5,31 @@ class CoursesController < ApplicationController
   # GET /courses.json
   def index
     
-    @destaques =  Course.order("RANDOM()").limit(4).distinct
-    @courses = Course.where("id NOT IN (?) ", @destaques.select(:id).distinct)
+    # @destaques =  Course.order("RANDOM()").limit(4).distinct
+    @destaques =  FACADE.Curso.order("RANDOM()").limit(4).distinct
+    
+    # @courses = Course.where("id NOT IN (?) ", @destaques.select(:id).distinct)
+    @courses = FACADE.Curso.where("id NOT IN (?) ", @destaques.select(:id).distinct)
     
     if ( (user_signed_in?) and (is_student(current_user.id)) )
-      @aluno = Student.where("user_id = ? ",current_user.id).first
-      @suas_aulas = Enrollment.where("student_id = ? ", @aluno.id )
-      @recomendacoes = Recommendation.where("enrollment_id IN (?)", @suas_aulas.select(:id))
+      # @aluno = Student.where("user_id = ? ",current_user.id).first
+      # @suas_aulas = Enrollment.where("student_id = ? ", @aluno.id )
+      # @recomendacoes = Recommendation.where("enrollment_id IN (?)", @suas_aulas.select(:id))
+      
+      @aluno = FACADE.Aluno.where("user_id = ? ",current_user.id).first
+      @suas_aulas = FACADE.Matricula.where("student_id = ? ", @aluno.id )
+      @recomendacoes = FACADE.Recommendation.where("enrollment_id IN (?)", @suas_aulas.select(:id))
     else
       
       if ( (user_signed_in?) and (is_teacher(current_user.id)) )
         # if @aluno.valid?
-          @teacher = Teacher.where("user_id = ? ",current_user.id).first
-          @suas_aulas = Course.where("teacher_id = ? ", @teacher.id )
-          @contratacoes = Enrollment.where("course_id IN (?)", @suas_aulas.select(:id))
+          # @teacher = Teacher.where("user_id = ? ",current_user.id).first
+          # @suas_aulas = Course.where("teacher_id = ? ", @teacher.id )
+          # @contratacoes = Enrollment.where("course_id IN (?)", @suas_aulas.select(:id))
+          
+          @teacher = FACADE.Professor.where("user_id = ? ",current_user.id).first
+          @suas_aulas = FACADE.Curso.where("teacher_id = ? ", @teacher.id )
+          @contratacoes = FACADE.Matricula.where("course_id IN (?)", @suas_aulas.select(:id))
       else
         @suas_aulas = nil
       end
@@ -29,12 +40,18 @@ class CoursesController < ApplicationController
   # GET /courses/1
   # GET /courses/1.json
   def show
-    @alunos = Student.joins("JOIN enrollments ON students.id = enrollments.student_id ").
+    # @alunos = Student.joins("JOIN enrollments ON students.id = enrollments.student_id ").
+    #                   where("enrollments.course_id = ?", @course.id)
+    
+    @alunos = FACADE.Aluno.joins("JOIN enrollments ON students.id = enrollments.student_id ").
                       where("enrollments.course_id = ?", @course.id)
                       
-    @cursos ||= Course.all
-    @matriculas ||= Enrollment.all
-    @recomendacoes ||= Recommendation.all
+    # @cursos ||= Course.all
+    # @matriculas ||= Enrollment.all
+    # @recomendacoes ||= Recommendation.all
+    
+    @matriculas ||= FACADE.Matricula.all
+    @recomendacoes ||= FACADE.Recomendacao.all
 		
 		@positivas = @recomendacoes.where("rating = 1 AND enrollment_id IN (?) ",
                                             @matriculas.where("course_id = (?)",
@@ -55,7 +72,8 @@ class CoursesController < ApplicationController
 
   # GET /courses/new
   def new
-    @course = Course.new
+    # @course = Course.new
+    @course = FACADE.Curso.new
   end
 
   # GET /courses/1/edit
@@ -67,11 +85,14 @@ class CoursesController < ApplicationController
   def create
     # @course = Course.new(course_params)
     
-    @teacher = Teacher.where(:user_id => current_user.id).first
+    # @teacher = Teacher.where(:user_id => current_user.id).first
+    @teacher = FACADE.Professor.where(:user_id => current_user.id).first
     
-    @course = Course.new
+    # @course = Course.new
+    @course = FACADE.Curso.new
     @course.name = params[:course][:name]
-    @course.matter = Matter.find(params[:course][:matter])
+    # @course.matter = Matter.find(params[:course][:matter])
+    @course.matter = FACADE.Materia.get(params[:course][:matter])
     @course.teacher = @teacher
     @course.value = params[:course][:value]
     @course.description = params[:course][:description]
@@ -127,10 +148,13 @@ class CoursesController < ApplicationController
   
   # GET /courses/agendamento/:course_id
   def agendamento
-    @curso = Course.find(params[:course_id])
+    # @curso = Course.find(params[:course_id])
+    @curso = FACADE.Curso.get(params[:course_id])
     
-    @matriculas ||= Enrollment.all
-    @recomendacoes ||= Recommendation.all
+    # @matriculas ||= Enrollment.all
+    # @recomendacoes ||= Recommendation.all
+    @matriculas ||= FACADE.Materia.all
+    @recomendacoes ||= FACADE.Recomendacao.all
 		
 		@positivas = @recomendacoes.where("rating = 1 AND enrollment_id IN (?) ",
                                             @matriculas.where("course_id = (?)",
@@ -149,7 +173,8 @@ class CoursesController < ApplicationController
     
     @prof = @curso.teacher
     if (user_signed_in?)
-      @aluno = Student.where("user_id = ? ", current_user.id)
+      # @aluno = Student.where("user_id = ? ", current_user.id)
+      @aluno = FACADE.Aluno.where("user_id = ? ", current_user.id)
     else
       @aluno = nil
     end
@@ -160,12 +185,16 @@ class CoursesController < ApplicationController
   def agendamento_save
 
     horas = params[:duracao]
-    @user = User.find(params[:user_id])
-    @aluno = Student.where("user_id = ?", @user.id).first
-    @curso = Course.find(params[:id_curso])
+    # @user = User.find(params[:user_id])
+    # @aluno = Student.where("user_id = ?", @user.id).first
+    # @curso = Course.find(params[:id_curso])
+    @user = FACADE.Usuario.get(params[:user_id])
+    @aluno = FACADE.Aluno.where("user_id = ?", @user.id).first
+    @curso = FACADE.Curso.get(params[:id_curso])
     
     # @agendamento = MatterTeacherStudent.new
-    @agendamento = Enrollment.new
+    # @agendamento = Enrollment.new
+    @agendamento = FACADE.Materia.new
     @agendamento.course_id = @curso.id
     @agendamento.student_id = @aluno.id
     @agendamento.hours = horas
@@ -183,10 +212,12 @@ class CoursesController < ApplicationController
   def recomendacao
     
     if ( (user_signed_in?) and (is_student(current_user.id)) )
-      @aluno = Student.where("user_id = ? ",current_user.id).first
-      @recomendacoes = Recommendation.all
-      @matriculas = Enrollment.where("student_id = ?", @aluno.id)
-                  
+      # @aluno = Student.where("user_id = ? ",current_user.id).first
+      # @recomendacoes = Recommendation.all
+      # @matriculas = Enrollment.where("student_id = ?", @aluno.id)
+      @aluno = FACADE.Aluno.where("user_id = ? ",current_user.id).first
+      @recomendacoes = FACADE.Recomendacao.all
+      @matriculas = FACADE.Matricula.where("student_id = ?", @aluno.id)
     end
     
   end
@@ -199,11 +230,17 @@ class CoursesController < ApplicationController
     user_id = params[:user_id]
     course_id = params[:course_id]
     
-    @user = User.find(user_id)
-    @aluno = Student.where("user_id = ?", @user.id).first
-    @curso = Course.find(course_id)
+    # @user = User.find(user_id)
+    # @aluno = Student.where("user_id = ?", @user.id).first
+    # @curso = Course.find(course_id)
+    @user = FACADE.Usuario.get(user_id)
+    @aluno = FACADE.Aluno.where("user_id = ?", @user.id).first
+    @curso = FACADE.Curso.get(course_id)
     
-    @matricula = Enrollment.where("course_id = ? ", @curso.id ).
+    # @matricula = Enrollment.where("course_id = ? ", @curso.id ).
+    #                         where("student_id = ?", @aluno.id).
+    #                         where("evaluation IS NULL ").first
+    @matricula = FACADE.Matricula.where("course_id = ? ", @curso.id ).
                             where("student_id = ?", @aluno.id).
                             where("evaluation IS NULL ").first
     
@@ -232,7 +269,8 @@ class CoursesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_course
-      @course = Course.find(params[:id])
+      # @course = Course.find(params[:id])
+      @course = FACADE.Curso.get(params[:id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
