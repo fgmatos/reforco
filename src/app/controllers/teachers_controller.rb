@@ -19,12 +19,22 @@ class TeachersController < ApplicationController
     
     if ( (params[:area]) and (!params[:area][:id].eql? "") )
       area_id = params[:area][:id] 
-        @materias = Matter.where("matters.areaOfKnowledge_id = ? ", area_id )
-        @teachers  = Teacher.joins('LEFT OUTER JOIN courses ON teachers.id = courses.teacher_id').
-              where("courses.id IN (?)", 
-                Course.where("matter_id IN (?) ", 
-                  Matter.where("matters.areaOfKnowledge_id = ? ", 
-                    area_id).select(:id) ).select(:id)).distinct
+        # @areas = AreaOfKnowledge.joins(' JOIN matters ON area_of_knowledges.id = matters.areaOfKnowledge_id').distinct
+        # @materias = Matter.where("matters.areaOfKnowledge_id = ? ", area_id )
+        
+        # @teachers  = Teacher.joins('LEFT OUTER JOIN courses ON teachers.id = courses.teacher_id').
+        #       where("courses.id IN (?)", 
+        #         Course.where("matter_id IN (?) ", 
+        #           Matter.where("matters.areaOfKnowledge_id = ? ", 
+        #             area_id).select(:id) ).select(:id)).distinct
+        
+        @teachers  = FACADE.Professor.joins_and_where_in(
+                        'LEFT OUTER JOIN courses ON teachers.id = courses.teacher_id',
+                        "courses.id IN (?)", 
+                        FACADE.Curso.where("matter_id IN (?) ", 
+                            FACADE.Materia.where("matters.areaOfKnowledge_id = ? ", area_id).select(:id) 
+                        ).select(:id) 
+                    )
     end
 
     
@@ -36,13 +46,18 @@ class TeachersController < ApplicationController
               Course.where("matter_id =  ?",materia_id).select(:id)).distinct
     end
       
-      @teachers ||= Teacher.all
-      @areas ||= AreaOfKnowledge.joins(' JOIN matters ON area_of_knowledges.id = matters.areaOfKnowledge_id').distinct
-      @materias ||= Matter.all
+      @teachers ||= FACADE.getAll("teacher")  # @teachers ||= Teacher.all
+      @materias ||= FACADE.getAll("matter") # @materias ||= Matter.all
       
-      @cursos ||= Course.all
-      @matriculas ||= Enrollment.all
-      @recomendacoes ||= Recommendation.all
+      # @areas ||= FACADE.AreaConhecimento.joins(' JOIN matters ON area_of_knowledges.id = matters.areaOfKnowledge_id').distinct
+      # @areas ||= FACADE.AreaConhecimento.where_IN( "id IN (?)", @materias.select(:areaOfKnowledge_id)).distinct
+      @areas ||= FACADE.AreaConhecimento.all
+      
+     
+      
+      @cursos ||= FACADE.getAll("course")                 # @cursos ||= Course.all
+      @matriculas ||= FACADE.getAll("enrollment")         # @matriculas ||= Enrollment.all
+      @recomendacoes ||= FACADE.getAll("recommendation")  # @recomendacoes ||= Recommendation.all
     
     
   end
@@ -50,19 +65,31 @@ class TeachersController < ApplicationController
  
   def show
 
-    @aulas = Course.where( "teacher_id = ? ", @teacher.id)
-    @ultimas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
-    @aulas_realizadas = Enrollment.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
-    @minhas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) )
+    # @aulas = Course.where( "teacher_id = ? ", @teacher.id)
+    @aulas = FACADE.Curso.where( "teacher_id = ?", @teacher.id)
+    
+    # @ultimas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
+    @ultimas_aulas = FACADE.Matricula.where("course_id in ( ? )", @aulas.select(:id) ).limit(5)
+    
+    # @aulas_realizadas = Enrollment.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
+    @aulas_realizadas = FACADE.Matricula.where("id NOT IN ( ? ) AND course_id in ( ? )", @ultimas_aulas.select(:id),@aulas.select(:id) )
+    
+    # @minhas_aulas = Enrollment.where("course_id in ( ? )", @aulas.select(:id) )
+    @minhas_aulas = FACADE.Matricula.where("course_id in ( ? )", @aulas.select(:id) )
    
     @horas_aulas = 0
     @minhas_aulas.each do |aula|
       @horas_aulas = @horas_aulas + aula.hours 
 		end
 		
-		@cursos ||= Course.all
-    @matriculas ||= Enrollment.all
-    @recomendacoes ||= Recommendation.all
+		# @cursos ||= Course.all
+		@cursos ||= FACADE.Curso.all
+		
+    # @matriculas ||= Enrollment.all
+    @matriculas ||= FACADE.Matricula.all
+    
+    # @recomendacoes ||= Recommendation.all
+    @recomendacoes ||= FACADE.Recomendacao.all
 		
 		@positivas = @recomendacoes.where("rating = 1 AND enrollment_id IN (?) ",
                                             @matriculas.where("course_id IN (?)",
@@ -94,8 +121,10 @@ class TeachersController < ApplicationController
     # aqui declarado.                                                                       #
     #-------------------------------------------------------------------------------------- #
     
-    @teacher = Teacher.new
-    @teacher.user = User.find(current_user.id) 
+    # @teacher = Teacher.new
+    # @teacher.user = User.find(current_user.id)
+    @teacher = FACADE.Professor.new
+    @teacher.user = FACADE.Usuario.get(current_user.id)
   end
   
   def edit
@@ -103,8 +132,10 @@ class TeachersController < ApplicationController
 
   
   def create
-    @teacher = Teacher.new(teacher_params)
-    @teacher.user = User.find(current_user.id)
+    # @teacher = Teacher.new(teacher_params)
+    @teacher = FACADE.Professor.new(teacher_params)
+    
+    @teacher.user = FACADE.Usuario.get(current_user.id)
     
     @teacher.user.avatar = params[:teacher][:avatar]
     @teacher.user.name = params[:teacher][:name]
@@ -164,7 +195,8 @@ class TeachersController < ApplicationController
   private
     
     def set_teacher
-      @teacher = Teacher.find(params[:id])
+      # @teacher = Teacher.find(params[:id])
+      @teacher = FACADE.Professor.get(params[:id])
     end
 
     def teacher_params
