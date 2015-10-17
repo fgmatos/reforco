@@ -10,7 +10,7 @@ class Facade
     
     # singleton design pattern implementation
     
-    @@instance = Facade.new
+    @@instance
     
     def self.getInstance
        @@instance ||= Facade.new
