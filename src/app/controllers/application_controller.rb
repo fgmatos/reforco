@@ -13,7 +13,8 @@ class ApplicationController < ActionController::Base
   def getStudent(id)
     # Student.where("user_id = ? ", id).first
     # return Student.find_by(user_id: id)
-    return FACADE.Aluno.find_by(user_id: id)
+    # return FACADE.Aluno.find_by(user_id: id)
+    return FACADE.Aluno.where("user_id = ?",id).first
   end
   
   def is_teacher(id)
@@ -24,7 +25,8 @@ class ApplicationController < ActionController::Base
   def getTeacher(id)
     # Teacher.where("user_id = ? ", id).first
     # return Teacher.find_by(user_id: id)
-    return FACADE.Professor.find_by(user_id: id)
+    # return FACADE.Professor.find_by(user_id: id)
+    return FACADE.Professor.where("user_id = ?",id).first
   end
   
   def agendamentos_path
